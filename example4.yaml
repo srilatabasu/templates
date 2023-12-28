@@ -1,0 +1,34 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: This is the master template
+
+Parameters:
+  SSHKey:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: Name of an existing EC2 key pair to enable SSH access to the instance
+
+  VpcCIDR:
+    Type: String
+    Default: 10.0.0.0/16
+    Description: Please enter VPC CIDR
+  
+  SubnetCIDR:
+    Type: String
+    Default: 10.0.1.0/24
+    Description: Please Enter CIDR for Subnet
+
+Resources:
+  myVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://cf-templates-1vmfbc9sv7pra-us-east-1.s3.amazonaws.com/vpc-stack+-withmetadata
+      Parameters:
+        VpcCIDR: !Ref VpcCIDR
+        SubnetCIDR: !Ref SubnetCIDR
+
+  MyEC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://cf-templates-1vmfbc9sv7pra-us-east-1.s3.amazonaws.com/ec2.yaml
+      Parameters:
+        SSHKey: !Ref SSHKey
+        SubnetId: !GetAtt myVPCStack.Outputs.mySubnet

@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://childstacksri.s3.amazonaws.com/vpc-stack
+      Parameters:
+        VpcCidrBlock: 172.31.0.0/16
+
+  SGStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://childstacksri.s3.amazonaws.com/sg-stack
+      Parameters:
+        VPCId: !GetAtt VPCStack.Outputs.VPCId
+
+  EC2Stack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: https://childstacksri.s3.amazonaws.com/ec2-stack
+      Parameters:
+        VPCId: !GetAtt VPCStack.Outputs.VPCId
+        SubnetIds: !ImportValue VPCStack-SubnetIds
